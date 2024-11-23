@@ -13,7 +13,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapGet("/employees", () => new Employee().GetAllEployees());
+app.MapGet("/employees/search", (string q) => Employee.Search(q));
 app.MapGet("/employees/{id:int}", (int id) => new Employee().GetFindByIdEmployee(id));
+app.MapPost("/employees/add", (Employee employee) => Employee.CreateEmployee(employee));
 
 app.Run();
 
@@ -31,9 +33,14 @@ class Employee
     };
 
     public List<Employee> GetAllEployees() => Employees;
-    public Employee? GetFindByIdEmployee(int id) 
+    public Employee? GetFindByIdEmployee(int id) =>  Employees.SingleOrDefault(e => e.Id.Equals(id));
+    public static List<Employee>? Search(string q) 
     {
-         return Employees.SingleOrDefault(e => e.Id.Equals(id));
+        return Employees.Where(e => e.FullName != null && e.FullName.ToLower().Contains(q)).ToList();
     }
+    
+    public static void CreateEmployee(Employee employee) => Employees.Add(employee);
+
+
 } 
 
