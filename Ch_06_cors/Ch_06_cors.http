@@ -1,0 +1,6 @@
+@Ch_06_cors_HostAddress = http://localhost:5297
+
+GET {{Ch_06_cors_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
