@@ -4,7 +4,20 @@ using Microsoft.AspNetCore.Diagnostics;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => {
+     c.SwaggerDoc("v1", new(){
+           Title = "Book API",
+           Version = "V1",
+           Description = "Virtual campus minimal api training program",
+           License = new (),
+           TermsOfService = new("https://www.samsun.edu.tr"),
+           Contact = new(){
+              Email = "example@example.com.tr",
+              Name = "Ayhan Karaman",
+              Url = new("https://www.youtube.com/@virtual.campus")
+           }
+     });
+});
 
 builder.Services.AddCors(options => {
      options.AddPolicy("all", builder => {
@@ -46,6 +59,7 @@ app.UseExceptionHandler(appError => {
             context.Response.StatusCode = contextFeatures.Error switch 
             {
                 NotFoundException => StatusCodes.Status404NotFound,
+                ArgumentOutOfRangeException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             };
 
@@ -61,41 +75,75 @@ app.UseExceptionHandler(appError => {
 
 app.MapGet("/api/errors", () => {
     throw new Exception("An error has been occured.");
-});
+})
+.Produces<ErrorDetails>(StatusCodes.Status500InternalServerError)
+.ExcludeFromDescription();
 
 
 
-app.MapGet("/api/books", () => Book.List);
+app.MapGet("/api/books", () => {
+    return Book.List.Count > 0
+        ? Results.Ok(Book.List)
+        : Results.NoContent();
+})
+.Produces<List<Book>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status204NoContent)
+.WithTags("CRUD", "GETs");
 
 app.MapGet("/api/books/{id:int}", (int id) => {
+    
+    if(!(id > 0 && id <= 1000))
+         throw new ArgumentOutOfRangeException("1-1000");
+
      var book = Book.List.FirstOrDefault(b => b.Id.Equals(id));
       if(book is not null) 
         return Results.Ok(book);
     throw new BookNotFoundException(id); //Results.NotFound();
-});
+})
+.Produces<Book>(StatusCodes.Status200OK)
+.Produces<ErrorDetails>(StatusCodes.Status404NotFound)
+.Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
+.WithTags("GETs");
 
 app.MapPost("/api/books", (Book newBook) => {
     newBook.Id = Book.List.Select(b => b.Id).Max() + 1;
     Book.List.Add(newBook);
     return Results.Created($"/api/books/{newBook.Id}", newBook);
-});
+})
+.Produces<Book>(StatusCodes.Status201Created)
+.WithTags("CRUD");
 
 app.MapPut("/api/books/{id:int}", (int id, Book editBook) => {
+
+    if(!(id > 0 && id <= 1000))
+         throw new ArgumentOutOfRangeException("1-1000");
+
     var book = Book.List.FirstOrDefault(b => b.Id.Equals(id));
     if (book is null)
-        return Results.NotFound();
+         throw new BookNotFoundException(id);
     book.Title = editBook.Title;
     book.Price = editBook.Price;
     return Results.Ok(book);
-});
+})
+.Produces<Book>(StatusCodes.Status200OK)
+.Produces<ErrorDetails>(StatusCodes.Status404NotFound)
+.Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
+.WithTags("CRUD");
 
 app.MapDelete("/api/books/{id:int}", (int id) => {
+    if(!(id > 0 && id <= 1000))
+         throw new ArgumentOutOfRangeException("1-1000");
+
     var book = Book.List.FirstOrDefault(b => b.Id.Equals(id));
     if(book is null)
-        return Results.NotFound();
+        throw new BookNotFoundException(id);
     Book.List.Remove(book);
     return Results.NoContent();
-});
+})
+.Produces(StatusCodes.Status204NoContent)
+.Produces<ErrorDetails>(StatusCodes.Status404NotFound)
+.Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
+.WithTags("CRUD");
 
 app.MapGet("/api/books/search", (string? title) => {
      var books = string.IsNullOrEmpty(title)  
@@ -107,7 +155,10 @@ app.MapGet("/api/books/search", (string? title) => {
 
       return books.Any() ? Results.Ok(books) : Results.NoContent();
 
-});
+})
+.Produces<List<Book>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status204NoContent)
+.WithTags("GETs");
 
 app.Run();
 
