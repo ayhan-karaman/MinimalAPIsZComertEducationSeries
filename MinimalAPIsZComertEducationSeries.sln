@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_07_swagger", "Ch_07_swag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_08_Validation", "Ch_08_Validation\Ch_08_Validation.csproj", "{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_09_DI", "Ch_09_DI\Ch_09_DI.csproj", "{3BA49294-DCA1-4224-A4B3-6685678AF37B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BA49294-DCA1-4224-A4B3-6685678AF37B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BA49294-DCA1-4224-A4B3-6685678AF37B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BA49294-DCA1-4224-A4B3-6685678AF37B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BA49294-DCA1-4224-A4B3-6685678AF37B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
