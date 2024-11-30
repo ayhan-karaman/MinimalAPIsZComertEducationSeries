@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_06_cors", "Ch_06_cors\Ch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_07_swagger", "Ch_07_swagger\Ch_07_swagger.csproj", "{67ECFE48-8442-41C2-80F3-ABEDA4872F26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_08_Validation", "Ch_08_Validation\Ch_08_Validation.csproj", "{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{67ECFE48-8442-41C2-80F3-ABEDA4872F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67ECFE48-8442-41C2-80F3-ABEDA4872F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67ECFE48-8442-41C2-80F3-ABEDA4872F26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4CEE80A-AA9F-4B35-AA9D-46598996AB93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
