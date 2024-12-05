@@ -1,0 +1,6 @@
+@Ch_11_Dal_HostAddress = http://localhost:5207
+
+GET {{Ch_11_Dal_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

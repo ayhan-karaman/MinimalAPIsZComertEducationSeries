@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_09_DI", "Ch_09_DI\Ch_09_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_10_DI_And_Interface", "Ch_10_DI_And_Interface\Ch_10_DI_And_Interface.csproj", "{F4D77D62-F0B5-4BF0-8384-FC091A7C00F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ch_11_Dal", "Ch_11_Dal\Ch_11_Dal.csproj", "{EED361F3-2ECA-449F-AF53-AEE694D162FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{F4D77D62-F0B5-4BF0-8384-FC091A7C00F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4D77D62-F0B5-4BF0-8384-FC091A7C00F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4D77D62-F0B5-4BF0-8384-FC091A7C00F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EED361F3-2ECA-449F-AF53-AEE694D162FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EED361F3-2ECA-449F-AF53-AEE694D162FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EED361F3-2ECA-449F-AF53-AEE694D162FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EED361F3-2ECA-449F-AF53-AEE694D162FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
