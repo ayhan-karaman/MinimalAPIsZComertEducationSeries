@@ -1,0 +1,6 @@
+@Ch_10_DI_And_Interface_HostAddress = http://localhost:5243
+
+GET {{Ch_10_DI_And_Interface_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
