@@ -1,0 +1,128 @@
+@startuml --
+title Book Api
+
+package Entities{
+    class Book{
+        + Id:int
+        + Title:string
+        + Price:double
+    }
+}
+package Entities.DTOs{
+    class BookDtoForInsertion{}
+    class BookDtoForUpdate{}
+    abstract BookDto{
+        + title:string
+        + price:Decimal
+    }
+}
+package Entities.Exceptions{
+    abstract NotFoundException{
+        + NotFoundException(message:string)
+    }
+    class BookNotFoundException{
+        + BookNotFoundException(id:int)
+    }
+}
+
+
+
+package Repositories {
+
+    class RepositoryContext{
+        + Books: DbSet<Book>
+        --
+        + RepositoryContext(options:DbContextOptions)
+        + OnModelCreating(modelBuilder:ModelBuilder)
+    }
+    class BookRepository {
+        - context:RepositoryContext
+        --
+        + GetAll():List<Book>
+        + Get(id): Book?
+        + Add(item:Book):void
+        + Remove(item:Book)
+        + Update(item Book)
+    }
+
+
+}
+package Services{
+    class BookService{
+        - bookList:List<Book>
+        --
+        + Count : int
+        --
+        + GetBooks():List<Book>
+        + GetBookById(id:int): Book
+        + AddBook(book:BookDtoForInsertion):void
+        + UpdateBook(id:int, book:BookDtoForUpdate):Book
+        + DeleteBook(id:int):void
+    }
+    class BookServiceV2{
+        - context:RepositoryContext
+        --
+        + Count : int
+        --
+        + GetBooks():List<Book>
+        + GetBookById(id:int): Book
+        + AddBook(book:BookDtoForInsertion):void
+        + UpdateBook(id:int, book:BookDtoForUpdate):Book
+        + DeleteBook(id:int):void
+    }
+    class BookServiceV3{
+        - context:BookRepository
+        --
+        + Count : int
+        --
+        + GetBooks():List<Book>
+        + GetBookById(id:int): Book
+        + AddBook(book:BookDtoForInsertion):Book
+        + UpdateBook(id:int, book:BookDtoForUpdate):Book
+        + DeleteBook(id:int):void
+    }
+
+
+}
+
+
+package Abstracts{
+    interface IBookService{
+        + Count : interface
+        --
+        + GetBooks():List<Book>
+        + GetBookById(id:int): Book
+        + AddBook(book:BookDtoForInsertion):Book
+        + UpdateBook(id:int, book:BookDtoForUpdate):Book
+        + DeleteBook(id:int):void
+    }
+}
+
+package Cofiguration{
+    class MappingProfile{
+
+    }
+
+    class ConfigurationExtensions{
+         {static} + ValidateIdRange(id:int):void
+         {static} + UseCustomExceptionHandler(app:IApplicationBuilder):void
+         {static} + AddCustomCors(services:IServiceCollection):IServiceCollection
+         {static} + AddCustomSwagger(services:IServiceCollection):IServiceCollection
+    }
+}
+
+
+MappingProfile -right-|> Profile:"<<implements>>"
+
+BookService .up.|> IBookService : "<<implements>>"
+BookServiceV2 .up.|> IBookService : "<<implements>>"
+BookServiceV3 .up.|> IBookService : "<<implements>>"
+
+RepositoryContext -right-|> DbContext : "<<extends>>"
+
+BookNotFoundException -right-|> NotFoundException:"<<extends>>"
+BookDtoForUpdate -left-|> BookDto:"<<extends>>"
+BookDtoForInsertion -right-|> BookDto:"<<extends>>"
+hide empty members
+
+@enduml
