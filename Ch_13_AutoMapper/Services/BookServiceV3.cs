@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Abstracts;
 using AutoMapper;
+using Configuration;
 using Entities;
 using Entities.DTOs;
 using Entities.Exceptions;
@@ -38,6 +39,7 @@ public class BookServiceV3 : IBookService
 
     public void DeleteBook(int id)
     {
+        id.ValidationIdInRange();
         var book = _bookRepo.Get(id);
         if (book != null)
         {
@@ -51,6 +53,7 @@ public class BookServiceV3 : IBookService
 
     public Book? GetBookById(int id)
     {
+        id.ValidationIdInRange();
         var book = _bookRepo.Get(id);
         if (book == null)
             throw new BookNotFoundException(id);
@@ -62,6 +65,7 @@ public class BookServiceV3 : IBookService
 
     public Book UpdateBook(int id, BookDtoForUpdate bookDto)
     {
+        id.ValidationIdInRange();
         var validationResults = new List<ValidationResult>();
         var context = new ValidationContext(bookDto);
         var isValid = Validator.TryValidateObject(bookDto, context, validationResults, true);

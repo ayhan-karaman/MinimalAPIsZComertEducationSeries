@@ -1,52 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Abstracts;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Services;
 using Entities;
-using Entities.Exceptions;
 using Entities.DTOs;
+using Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new()
-    {
-        Title = "Book API",
-        Version = "V1",
-        Description = "Virtual campus minimal api training program",
-        License = new(),
-        TermsOfService = new("https://www.samsun.edu.tr"),
-        Contact = new()
-        {
-            Email = "example@example.com.tr",
-            Name = "Ayhan Karaman",
-            Url = new("https://www.youtube.com/@virtual.campus")
-        }
-    });
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("all", builder =>
-    {
-        builder.AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader();
-    });
-
-    options.AddPolicy("special", builder =>
-    {
-        builder.WithOrigins("https://localhost:300")
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials();
-    });
-});
+builder.Services.AddCustomSwagger();
+builder.Services.AddCustomCors();
 
 // DI registration
 builder.Services.AddScoped<IBookService, BookServiceV3>();
@@ -68,36 +34,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("all");
 app.UseHttpsRedirection();
 
-app.UseExceptionHandler(appError =>
-{
-    appError.Run(async context =>
-    {
-
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        context.Response.ContentType = "application/json";
-
-        var contextFeatures = context.Features.Get<IExceptionHandlerFeature>();
-
-        if (contextFeatures is not null)
-        {
-            context.Response.StatusCode = contextFeatures.Error switch
-            {
-                NotFoundException => StatusCodes.Status404NotFound,
-                ValidationException => StatusCodes.Status422UnprocessableEntity,
-                ArgumentOutOfRangeException => StatusCodes.Status400BadRequest,
-                _ => StatusCodes.Status500InternalServerError
-            };
-
-            await context.Response.WriteAsync(
-                    new ErrorDetails()
-                    {
-                        Message = contextFeatures.Error.Message,
-                        StatusCode = context.Response.StatusCode
-                    }.ToString()
-             );
-        }
-    });
-});
+app.UseCustomExceptionHandler();
 
 app.MapGet("/api/errors", () =>
 {
@@ -122,14 +59,8 @@ app.MapGet("/api/books", (IBookService bookService) =>
 
 app.MapGet("/api/books/{id:int}", (int id, IBookService bookService) =>
 {
-
-    if (!(id > 0 && id <= 1000))
-        throw new ArgumentOutOfRangeException("1-1000");
-
     var book = bookService.GetBookById(id);
-    if (book is not null)
-        return Results.Ok(book);
-    throw new BookNotFoundException(id); //Results.NotFound();
+    return Results.Ok(book);
 })
 .Produces<Book>(StatusCodes.Status200OK)
 .Produces<ErrorDetails>(StatusCodes.Status404NotFound)
@@ -151,9 +82,6 @@ app.MapPost("/api/books", (BookDtoForInsertion newBook, IBookService bookService
 
 app.MapPut("/api/books/{id:int}", (int id, BookDtoForUpdate editBook, IBookService bookService) =>
 {
-    if (!(id > 0 && id <= 1000))
-        throw new ArgumentOutOfRangeException("1-1000");
-
      var book = bookService.UpdateBook(id, editBook);
     
     return Results.Ok(book);
@@ -169,10 +97,7 @@ app.MapPut("/api/books/{id:int}", (int id, BookDtoForUpdate editBook, IBookServi
 
 app.MapDelete("/api/books/{id:int}", (int id, IBookService bookService) =>
 {
-    if (!(id > 0 && id <= 1000))
-        throw new ArgumentOutOfRangeException("1-1000");
-
-
+   
     bookService.DeleteBook(id);
     return Results.NoContent();
 })
