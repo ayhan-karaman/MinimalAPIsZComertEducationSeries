@@ -1,7 +1,7 @@
 
 namespace Entities.DTOs;
 
-public record BookDtoForUpdate : BookDto
+public record BookDtoForUpdate : BookDtoBase
 {
     
 }

@@ -4,16 +4,32 @@ title Book Api
 package Entities{
     class Book{
         + Id:int
+        + CategoryId:int
         + Title:string
         + Price:double
+        + Category:Category
     }
+
+    class Category {
+        + Id:int
+        + CategoryName:string
+        + Books:ICollection<Book>
+    }
+
+    ' Category "1" --> "0..*" Book : "Books"
+    Book "n" o-down-> "1" Category : "one to many"
 }
 package Entities.DTOs{
     class BookDtoForInsertion{}
     class BookDtoForUpdate{}
-    abstract BookDto{
+    class BookDto{
+        + Id:int
+        + Category:Category
+    }
+    abstract BookDtoBase{
         + title:string
         + price:Decimal
+        + categoryId:int
     }
 }
 package Entities.Exceptions{
@@ -31,18 +47,30 @@ package Repositories {
 
     class RepositoryContext{
         + Books: DbSet<Book>
+        + Categories: DbSet<Category>
         --
         + RepositoryContext(options:DbContextOptions)
         + OnModelCreating(modelBuilder:ModelBuilder)
     }
     class BookRepository {
-        - context:RepositoryContext
-        --
         + GetAll():List<Book>
         + Get(id): Book?
-        + Add(item:Book):void
-        + Remove(item:Book)
-        + Update(item Book)
+       
+    }
+    class CategoryRepository {
+       
+       
+    }
+
+    abstract RepositoryBase
+    {
+        # context:RepositoryContext
+        --
+        + GetAll():List<T>
+        + Get(id:int): T?
+        + Add(item:T):void
+        + Remove(item:T)
+        + Update(item T)
     }
 
 
@@ -104,10 +132,10 @@ package Cofiguration{
     }
 
     class ConfigurationExtensions{
-         {static} + ValidateIdRange(id:int):void
-         {static} + UseCustomExceptionHandler(app:IApplicationBuilder):void
-         {static} + AddCustomCors(services:IServiceCollection):IServiceCollection
-         {static} + AddCustomSwagger(services:IServiceCollection):IServiceCollection
+        {static} + ValidateIdRange(id:int):void
+        {static} + UseCustomExceptionHandler(app:IApplicationBuilder):void
+        {static} + AddCustomCors(services:IServiceCollection):IServiceCollection
+        {static} + AddCustomSwagger(services:IServiceCollection):IServiceCollection
     }
 }
 
@@ -118,11 +146,21 @@ BookService .up.|> IBookService : "<<implements>>"
 BookServiceV2 .up.|> IBookService : "<<implements>>"
 BookServiceV3 .up.|> IBookService : "<<implements>>"
 
+
+BookRepository -l-> RepositoryBase : "<<extends>>"
+CategoryRepository -r-> RepositoryBase : "<<extends>>"
+RepositoryBase o-d- RepositoryContext : "has-a"
 RepositoryContext -right-|> DbContext : "<<extends>>"
 
 BookNotFoundException -right-|> NotFoundException:"<<extends>>"
-BookDtoForUpdate -left-|> BookDto:"<<extends>>"
-BookDtoForInsertion -right-|> BookDto:"<<extends>>"
+
+
+BookDto -up-|> BookDtoBase : "<<extends>>"
+BookDtoForUpdate -left-|> BookDtoBase : "<<extends>>"
+BookDtoForInsertion -right-|> BookDtoBase : "<<extends>>"
+
+
+
 hide empty members
 
 @enduml

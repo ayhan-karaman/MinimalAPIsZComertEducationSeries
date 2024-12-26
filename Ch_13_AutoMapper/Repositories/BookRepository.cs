@@ -3,37 +3,24 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repositories;
-public class BookRepository 
+public class BookRepository : RepositoryBase<Book>
 {
-    private readonly RepositoryContext _context;
-
-    public BookRepository(RepositoryContext context)
+    public BookRepository(RepositoryContext context) : base(context)
     {
-        _context = context;
     }
 
     public Book? Get(int id)
-    => _context.Books.FirstOrDefault(x => x.Id == id);
+    => _context
+    .Books
+    .Include(x => x.Category) // eager loading yaklaşımı
+    .FirstOrDefault(x => x.Id == id);
     
 
     public List<Book> GetAll()
-    => _context.Books.ToList();
+    => _context
+    .Books
+    .Include(x => x.Category) // eager loading yaklaşımı
+    .ToList();
 
-    public void Add(Book item)
-    {
-        _context.Books.Add(item);
-        _context.SaveChanges();
-    }
-
-    public void Remove(Book item)
-    {
-        _context.Books.Remove(item);
-        _context.SaveChanges();
-    }
-
-    public void Update(Book item)
-    {
-        _context.Books.Update(item);
-        _context.SaveChanges();
-    }
+   
 }

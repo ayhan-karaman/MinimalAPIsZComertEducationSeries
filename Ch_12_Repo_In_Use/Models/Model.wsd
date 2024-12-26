@@ -73,6 +73,7 @@ package Services{
         + AddBook(book:Book):void
         + UpdateBook(id:int, book:Book):Book
         + DeleteBook(id:int):void
+        - Validate<T>(T item):void
     }
 
 
