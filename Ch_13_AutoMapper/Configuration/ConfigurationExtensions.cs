@@ -11,6 +11,18 @@ public static class ConfigurationExtensions
             throw new ArgumentOutOfRangeException("1-1000");
     }
 
+    public static void Validate<T>(this T item)
+    {
+        var validationResults = new List<ValidationResult>();
+        var context = new ValidationContext(item);
+        var isValid = Validator.TryValidateObject(item, context, validationResults, true);
+        if (!isValid)
+        {
+            var errors = string.Join(", ", validationResults.Select(v => v.ErrorMessage));
+            throw new ValidationException(errors);
+        }
+    }
+
     public static void UseCustomExceptionHandler(this IApplicationBuilder app)
     {
         app.UseExceptionHandler(appError =>

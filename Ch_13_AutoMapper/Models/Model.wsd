@@ -20,17 +20,30 @@ package Entities{
     Book "n" o-down-> "1" Category : "one to many"
 }
 package Entities.DTOs{
-    class BookDtoForInsertion{}
-    class BookDtoForUpdate{}
-    class BookDto{
-        + Id:int
-        + Category:Category
-    }
+    ' Book Dto
     abstract BookDtoBase{
         + title:string
         + price:Decimal
         + categoryId:int
     }
+     class BookDto{
+        + Id:int
+        + Category:Category
+    }
+    class BookDtoForInsertion{}
+    class BookDtoForUpdate{}
+   
+    ' Category Dto
+
+    abstract CategoryDtoBase{
+         + categoryName:string
+    }
+    class CategoryDto{
+         + Id:int
+         + Books:List<Book>
+    }
+    class CategoryDtoForInsertion{}
+    class CategoryDtoForUpdate{}
 }
 package Entities.Exceptions{
     abstract NotFoundException{
@@ -38,6 +51,10 @@ package Entities.Exceptions{
     }
     class BookNotFoundException{
         + BookNotFoundException(id:int)
+    }
+
+    class CategoryNotFoundException{
+        + CategoryNotFoundException(id:int)
     }
 }
 
@@ -58,7 +75,8 @@ package Repositories {
        
     }
     class CategoryRepository {
-       
+       + GetAll():List<Category>
+        + Get(id): Category?
        
     }
 
@@ -103,11 +121,24 @@ package Services{
         --
         + Count : int
         --
-        + GetBooks():List<Book>
-        + GetBookById(id:int): Book
+        + GetBooks():List<BookDto>
+        + GetBookById(id:int): BookDto
         + AddBook(book:BookDtoForInsertion):Book
         + UpdateBook(id:int, book:BookDtoForUpdate):Book
         + DeleteBook(id:int):void
+    }
+
+    class CategoryService
+    {
+        - _context:CategoryRepository
+        --
+        + count:int
+        + GetCategories():List<CategoryDto>
+        + GetCategoryById(id:int): CategoryDto
+        + AddCategory(category:CategoryDtoForInsertion):Category
+        + UpdateCategory(id:int, category:CategoryForUpdate):Category
+        + DeleteCategory(id:int):void
+
     }
 
 
@@ -116,13 +147,23 @@ package Services{
 
 package Abstracts{
     interface IBookService{
-        + Count : interface
+        + Count : int
         --
-        + GetBooks():List<Book>
-        + GetBookById(id:int): Book
+        + GetBooks():List<BookDto>
+        + GetBookById(id:int): BookDto
         + AddBook(book:BookDtoForInsertion):Book
         + UpdateBook(id:int, book:BookDtoForUpdate):Book
         + DeleteBook(id:int):void
+    }
+
+    interface ICategoryService{
+         + count:int
+         --
+         + GetCategories():List<CategoryDto>
+         + GetCategoryById(id:int):CategoryDto
+         + AddCategory(category:CategoryDtoForInsertion):Category
+         + UpdateCategory(id:int, category:CategoryDtoForUpdate):Category
+         + DeleteCategory(id:int):void
     }
 }
 
@@ -133,6 +174,7 @@ package Cofiguration{
 
     class ConfigurationExtensions{
         {static} + ValidateIdRange(id:int):void
+        {static} + Validate<T>(T:item):void
         {static} + UseCustomExceptionHandler(app:IApplicationBuilder):void
         {static} + AddCustomCors(services:IServiceCollection):IServiceCollection
         {static} + AddCustomSwagger(services:IServiceCollection):IServiceCollection
@@ -147,18 +189,26 @@ BookServiceV2 .up.|> IBookService : "<<implements>>"
 BookServiceV3 .up.|> IBookService : "<<implements>>"
 
 
+CategoryService .up.|> ICategoryService: "<<implements>>"
+
+
 BookRepository -l-> RepositoryBase : "<<extends>>"
 CategoryRepository -r-> RepositoryBase : "<<extends>>"
 RepositoryBase o-d- RepositoryContext : "has-a"
 RepositoryContext -right-|> DbContext : "<<extends>>"
 
-BookNotFoundException -right-|> NotFoundException:"<<extends>>"
+BookNotFoundException -up-|> NotFoundException:"<<extends>>"
+CategoryNotFoundException -up-|> NotFoundException:"<<extends>>"
 
 
 BookDto -up-|> BookDtoBase : "<<extends>>"
 BookDtoForUpdate -left-|> BookDtoBase : "<<extends>>"
 BookDtoForInsertion -right-|> BookDtoBase : "<<extends>>"
 
+
+CategoryDto -up-> CategoryDtoBase : "<<extends>>"
+CategoryDtoForUpdate -left-> CategoryDtoBase : "<<extends>>"
+CategoryDtoForInsertion -right-> CategoryDtoBase : "<<extends>>"
 
 
 hide empty members

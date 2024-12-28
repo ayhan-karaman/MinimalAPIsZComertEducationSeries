@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 namespace Entities;
 public class Book
 {
@@ -11,6 +12,8 @@ public class Book
     public double Price { get; set; }
 
     public string? URL { get; set; }
+
+    [JsonIgnore]
     public Category? Category { get; set; }
     public Book()
     {

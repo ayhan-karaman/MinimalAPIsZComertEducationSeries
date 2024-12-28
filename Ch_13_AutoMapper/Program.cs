@@ -15,8 +15,15 @@ builder.Services.AddCustomSwagger();
 builder.Services.AddCustomCors();
 
 // DI registration
+// Book
 builder.Services.AddScoped<IBookService, BookServiceV3>();
 builder.Services.AddScoped<BookRepository>();
+
+// Category
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<CategoryRepository>();
+
+// Database
 builder.Services.AddDbContext<RepositoryContext>(options => {
      options.UseSqlite(builder.Configuration.GetConnectionString("sqlite"));
 });
@@ -43,7 +50,7 @@ app.MapGet("/api/errors", () =>
 .Produces<ErrorDetails>(StatusCodes.Status500InternalServerError)
 .ExcludeFromDescription();
 
-
+/// Books 
 
 app.MapGet("/api/books", (IBookService bookService) =>
 {
@@ -53,7 +60,7 @@ app.MapGet("/api/books", (IBookService bookService) =>
 })
 .Produces<List<Book>>(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status204NoContent)
-.WithTags("CRUD", "GETs");
+.WithTags("BOOK-CRUD", "BOOK-GETs");
 
 
 
@@ -65,7 +72,7 @@ app.MapGet("/api/books/{id:int}", (int id, IBookService bookService) =>
 .Produces<Book>(StatusCodes.Status200OK)
 .Produces<ErrorDetails>(StatusCodes.Status404NotFound)
 .Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
-.WithTags("GETs");
+.WithTags("BOOK-GETs");
 
 
 
@@ -76,7 +83,7 @@ app.MapPost("/api/books", (BookDtoForInsertion newBook, IBookService bookService
 })
 .Produces<Book>(StatusCodes.Status201Created)
 .Produces<List<ValidationResult>>(StatusCodes.Status422UnprocessableEntity)
-.WithTags("CRUD");
+.WithTags("BOOK-CRUD");
 
 
 
@@ -90,7 +97,7 @@ app.MapPut("/api/books/{id:int}", (int id, BookDtoForUpdate editBook, IBookServi
 .Produces<ErrorDetails>(StatusCodes.Status404NotFound)
 .Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
 .Produces<ErrorDetails>(StatusCodes.Status422UnprocessableEntity)
-.WithTags("CRUD");
+.WithTags("BOOK-CRUD");
 
 
 
@@ -104,7 +111,7 @@ app.MapDelete("/api/books/{id:int}", (int id, IBookService bookService) =>
 .Produces(StatusCodes.Status204NoContent)
 .Produces<ErrorDetails>(StatusCodes.Status404NotFound)
 .Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
-.WithTags("CRUD");
+.WithTags("BOOK-CRUD");
 
 
 
@@ -123,9 +130,66 @@ app.MapGet("/api/books/search", (string? title, IBookService
 })
 .Produces<List<Book>>(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status204NoContent)
-.WithTags("GETs");
+.WithTags("BOOK-GETs");
 
 
+
+/// Category
+
+
+app.MapGet("/api/categories", (ICategoryService categoryService) =>{
+     var categories = categoryService.GetCategories();
+     return Results.Ok(categories);
+})
+.Produces<List<CategoryDto>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status204NoContent)
+.WithTags("CATEGORY-CRUD", "CATEGORY-GETs");
+
+app.MapGet("/api/categories/{id:int}", (int id, ICategoryService categoryService) =>
+{
+    var book = categoryService.GetCategoryById(id);
+    return Results.Ok(book);
+})
+.Produces<Category>(StatusCodes.Status200OK)
+.Produces<ErrorDetails>(StatusCodes.Status404NotFound)
+.Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
+.WithTags("CATEGORY-GETs");
+
+
+app.MapPost("/api/categories", (CategoryDtoForInsertion newCategory, ICategoryService categoryService) =>
+{
+    var category = categoryService.AddCategory(newCategory);
+    return Results.Created($"/api/books/{category.Id}", newCategory);
+})
+.Produces<Category>(StatusCodes.Status201Created)
+.Produces<List<ValidationResult>>(StatusCodes.Status422UnprocessableEntity)
+.WithTags("CATEGORY-CRUD");
+
+
+
+app.MapPut("/api/categories/{id:int}", (int id, CategoryDtoForUpdate editCategory, ICategoryService categoryService) =>
+{
+     var category = categoryService.UpdateCategory(id, editCategory);
+    
+    return Results.Ok(category);
+})
+.Produces<Category>(StatusCodes.Status200OK)
+.Produces<ErrorDetails>(StatusCodes.Status404NotFound)
+.Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
+.Produces<ErrorDetails>(StatusCodes.Status422UnprocessableEntity)
+.WithTags("CATEGORY-CRUD");
+
+
+app.MapDelete("/api/categories/{id:int}", (int id, ICategoryService categoryService) =>
+{
+   
+    categoryService.DeleteCategory(id);
+    return Results.NoContent();
+})
+.Produces(StatusCodes.Status204NoContent)
+.Produces<ErrorDetails>(StatusCodes.Status404NotFound)
+.Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
+.WithTags("CATEGORY-CRUD");
 
 app.Run();
 

@@ -23,7 +23,7 @@ public class BookServiceV3 : IBookService
 
     public Book AddBook(BookDtoForInsertion bookDto)
     {
-        Validate(bookDto);
+        bookDto.Validate();
         var book = _mapper.Map<Book>(bookDto);
         _bookRepo.Add(book);
         return book;
@@ -61,7 +61,7 @@ public class BookServiceV3 : IBookService
     public Book UpdateBook(int id, BookDtoForUpdate bookDto)
     {
         id.ValidationIdInRange();
-        Validate<BookDtoForUpdate>(bookDto);
+        bookDto.Validate();
         var book = _bookRepo.Get(id);
         if(book == null)
             throw new BookNotFoundException(id);
@@ -73,7 +73,7 @@ public class BookServiceV3 : IBookService
 
     private void Validate<T>(T item)
     {
-         var validationResults = new List<ValidationResult>();
+        var validationResults = new List<ValidationResult>();
         var context = new ValidationContext(item);
         var isValid = Validator.TryValidateObject(item, context, validationResults, true);
         if (!isValid)
