@@ -14,5 +14,7 @@ public class MappingProfile:Profile
         CreateMap<CategoryDtoForInsertion, Category>().ReverseMap();
         CreateMap<CategoryDtoForUpdate, Category>().ReverseMap();
         CreateMap<Category, CategoryDto>().ReverseMap();
+
+        CreateMap<UserDtoForRegistration, User>().ReverseMap();
     }
 }

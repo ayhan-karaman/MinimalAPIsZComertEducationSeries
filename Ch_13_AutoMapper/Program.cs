@@ -7,12 +7,16 @@ using Services;
 using Entities;
 using Entities.DTOs;
 using Configuration;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCustomSwagger();
 builder.Services.AddCustomCors();
+builder.Services.ConfigureIdentity();
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 // DI registration
 // Book
@@ -22,6 +26,9 @@ builder.Services.AddScoped<BookRepository>();
 // Category
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<CategoryRepository>();
+
+// Auth
+builder.Services.AddScoped<IAuthService, AuthenticationManager>();
 
 // Database
 builder.Services.AddDbContext<RepositoryContext>(options => {
@@ -41,6 +48,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("all");
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseCustomExceptionHandler();
 
 app.MapGet("/api/errors", () =>
@@ -190,6 +199,17 @@ app.MapDelete("/api/categories/{id:int}", (int id, ICategoryService categoryServ
 .Produces<ErrorDetails>(StatusCodes.Status404NotFound)
 .Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
 .WithTags("CATEGORY-CRUD");
+
+
+app.MapPost("/api/auth", async(UserDtoForRegistration userDto, IAuthService authService) => {
+     var result = await authService.ResigterUserAsync(userDto);
+     return result.Succeeded 
+     ? Results.Ok(result)
+     : Results.BadRequest(result.Errors);
+})
+.Produces<IdentityResult>(StatusCodes.Status200OK)
+.Produces<ErrorDetails>(StatusCodes.Status400BadRequest)
+.WithTags("Auth");
 
 app.Run();
 

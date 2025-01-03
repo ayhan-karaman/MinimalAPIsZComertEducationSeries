@@ -1,8 +1,10 @@
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Repositories;
-public class RepositoryContext : DbContext
+public class RepositoryContext : IdentityDbContext<User>
 {
     public RepositoryContext(DbContextOptions<RepositoryContext> options) : base(options)
     {
@@ -57,6 +59,21 @@ public class RepositoryContext : DbContext
                 Price = 190.00
             }
         );
+        
+
+        modelBuilder.Entity<IdentityRole>().HasData(
+             new IdentityRole()
+             {
+                 Name = "Admin",
+                 NormalizedName =  "ADMIN"
+             },
+             new  IdentityRole()
+             {
+                Name = "User",
+                NormalizedName = "USER"
+             }
+        );
+    
     }
 
 }
